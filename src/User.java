@@ -52,4 +52,13 @@ public class User {
 	{
 		return time;
 	}
+	
+	/*
+	 * Custom to string
+	 */
+	@Override
+	public String toString()
+	{
+		return "Card ID = " + cardID + "\n Access ID: " + accessID + "\n Points: " + points + "\n Timestamp: " + time.toString();
+	}
 }
