@@ -1,0 +1,38 @@
+GUI Properties:
+    - Login Panel:
+        - Username (pre-filled in)
+        - Password (user must enter)
+        - Table name (default = points_fall_16)
+        - Login button
+    
+    - Check-In Page:
+        - Swipe access box
+        - Enter button
+        - Radio buttons to select point value (General, Extended, CodePSU)
+
+
+Potential Swipe Cases:
+    - New User:
+        - Prompt for access ID
+        - Insert new entry into database with # of points
+    - Returning user:
+        - Get user from database
+        - Increment points
+        - Update user
+
+Class Structures:
+    - DataConnection:
+        - Establishes connection w/ database:
+    - Constants:
+        - Username
+        - Password
+        - Table name
+    - DatabaseUtility:
+        - getUser(String cardID) ---> gets User
+        - insertNewUser(String cardID, String accessID, int points)
+        - updateUser(String cardID, int points) 
+    - User
+        - getCardID --> returns cardID
+        - getAccessID --> returns AccessID
+        - getPoints --> returns Points
+        - get last_checkin --> returns Last Check in

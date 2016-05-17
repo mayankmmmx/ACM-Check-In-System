@@ -5,9 +5,7 @@
 import java.sql.*;
 
 public class DataConnection {
-	
-	private static final String DATABASE_URL = "jdbc:mysql://localhost:3306/points";
-	
+		
 	private static final String HOSTNAME = "localhost:3306";
 	private static final String DATABASENAME = "points";
 	private static final String username = "points";
