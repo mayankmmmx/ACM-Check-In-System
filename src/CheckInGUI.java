@@ -9,10 +9,16 @@ public class CheckInGUI extends JFrame{
 
 	private JFrame loginFrame;
 	private JFrame checkInFrame;
-	private JLabel loginName; 
+	private JLabel userName; 
 	
 	public CheckInGUI() {
 
+		setUpLoginFrame();
+        
+	}
+
+	public void setUpLoginFrame()
+	{
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();       
 		loginFrame = new JFrame("Login to ACM Check-In");
 		
@@ -22,13 +28,14 @@ public class CheckInGUI extends JFrame{
         screenSize.height = (int) (screenSize.getHeight()/3);
         screenSize.width = (int) (screenSize.getWidth()/3);
         
-        loginFrame.setPreferredSize(screenSize);
+        userName = new JLabel("User Name: ");
         
+        loginFrame.add(userName);
+        loginFrame.setPreferredSize(screenSize);
+        loginFrame.setResizable(false);
         loginFrame.pack();
         loginFrame.setVisible(true);
-        
 	}
-	
 	
 	
 	
