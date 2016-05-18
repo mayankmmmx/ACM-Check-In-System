@@ -5,19 +5,14 @@
 import java.sql.*;
 
 public class DataConnection {
-		
-	private static final String HOSTNAME = "localhost:3306";
-	private static final String DATABASENAME = "points";
-	private static final String username = "points";
-	private static final String password = "pOiNtS"; //CHANGE ON FINAL APP VERSION
-	
+
     public static Connection createConnection() throws SQLException
     {
-    	String databaseURL = "jdbc:mysql://" + HOSTNAME +"/" + DATABASENAME;
+    	String databaseURL = "jdbc:mysql://" + Constants.HOST_NAME +"/" + Constants.DATABASE_NAME;
     	Connection connection = null;
     	if(connection == null)
     	{
-    		connection = DriverManager.getConnection(databaseURL, username, password);
+    		connection = DriverManager.getConnection(databaseURL, Constants.USERNAME, Constants.PASSWORD);
     		System.out.println("Connected.");
     	}
 

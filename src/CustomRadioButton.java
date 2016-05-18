@@ -5,7 +5,8 @@
 import javax.swing.JRadioButton;
 
 public class CustomRadioButton extends JRadioButton {
-	
+
+	private static final long serialVersionUID = 1L;
 	private int pointValue;
 	
 	/*
