@@ -5,7 +5,7 @@ import java.sql.*;
 import java.util.Calendar;
 
 public class DatabaseUtility {
-	
+		
 	/*
 	 * Gets user using cardID as parameter
 	 * Returns User object
@@ -30,16 +30,16 @@ public class DatabaseUtility {
 	/*
 	 * Inserts new user into database and updates points
 	 */
-	public static void insertNewUser(User user, int points) throws SQLException
+	public static void insertNewUser(String cardID, String accessID, int points) throws SQLException
 	{
 		Connection connection = DataConnection.createConnection();
         Timestamp currentTimestamp = new Timestamp(Calendar.getInstance().getTime().getTime());
         
         String sql = "INSERT into points_fall_16 (cardID, accessID, points, last_checkin) values (?, ?, ?, ?)";
         PreparedStatement statement = connection.prepareStatement(sql);
-        statement.setString(1, user.getCardID());
-        statement.setString(2, user.getAccessID());
-        statement.setInt(3, (user.getPoints() + points));
+        statement.setString(1, cardID);
+        statement.setString(2, accessID);
+        statement.setInt(3, points);
         statement.setTimestamp(4, currentTimestamp);        
         statement.executeUpdate();
 	}

@@ -13,7 +13,6 @@ public class DataConnection {
     	if(connection == null)
     	{
     		connection = DriverManager.getConnection(databaseURL, Constants.USERNAME, Constants.PASSWORD);
-    		System.out.println("Connected.");
     	}
 
         return connection;
