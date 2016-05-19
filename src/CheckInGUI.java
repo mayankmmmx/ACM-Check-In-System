@@ -1,22 +1,11 @@
 /*
  * This class contains the GUI elements of the application
  */
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.awt.*;
+import java.awt.event.*;
+import java.sql.Connection;
 import java.sql.SQLException;
-
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 public class CheckInGUI extends JFrame{
 
@@ -36,8 +25,8 @@ public class CheckInGUI extends JFrame{
 	private JTextField databaseNameField;
 	private JTextField tableNameField;
 	private JTextField userNameField;
-	private JTextField cardIDField;
 	private JPasswordField passwordField;
+	private JPasswordField cardIDField;
 	private JButton login;
 	private JButton submit; 
 	private CustomRadioButton general;
@@ -91,7 +80,7 @@ public class CheckInGUI extends JFrame{
         login = new JButton("Login");
         
         loginHeading.setFont(new Font(loginHeading.getName(), loginHeading.getFont().getStyle(), 25)); //sets font for login heading
-                
+        
         //Adds all objects to subpanels
         loginHeadingPanel.add(loginHeading);
         hostNamePanel.add(hostName);
@@ -121,7 +110,7 @@ public class CheckInGUI extends JFrame{
         loginFrame.setPreferredSize(screenSize);
         loginFrame.setResizable(false);
         loginFrame.pack();
-        loginFrame.setVisible(false);
+        loginFrame.setVisible(true);
 	}
 	
 	/*
@@ -146,7 +135,7 @@ public class CheckInGUI extends JFrame{
         checkInHeading = new JLabel("ACM CHECK-IN SYSTEM");
         checkInHeading.setFont(new Font(loginHeading.getName(), loginHeading.getFont().getStyle(), 25)); //sets font for login heading
         cardID = new JLabel("Enter Card ID: ");
-        cardIDField = new JTextField(20);
+        cardIDField = new JPasswordField(20);
         submit = new JButton("Submit");
         
         allRadioButtons = new ButtonGroup();
@@ -179,7 +168,7 @@ public class CheckInGUI extends JFrame{
         checkInFrame.setPreferredSize(screenSize);
         checkInFrame.setResizable(false);
         checkInFrame.pack();
-        checkInFrame.setVisible(true);
+        checkInFrame.setVisible(false);
 	}
 	
 	/*
@@ -187,27 +176,132 @@ public class CheckInGUI extends JFrame{
 	 */
 	public void initiateActionListeners()
 	{
+		loginFrame.addWindowListener(new WindowAdapter() {
+		    public void windowOpened( WindowEvent e ){
+		        passwordField.requestFocus();
+		    }
+		}); 
+		
 		login.addActionListener(
 			new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
+
+					//Sets constants based on login inputs
 					Constants.HOST_NAME = hostNameField.getText();
 					Constants.DATABASE_NAME = databaseNameField.getText();
 					Constants.TABLE_NAME = tableNameField.getText();
 					Constants.USERNAME = userNameField.getText();
 					Constants.PASSWORD = new String(passwordField.getPassword());
+					
+					try {
+						
+						Connection test = DataConnection.createConnection(); //tries to connect. If connection works, then goes to check in frame.
+						loginFrame.setVisible(false);
+						checkInFrame.setVisible(true);
+					
+					} catch (SQLException e1) {
+						JOptionPane.showMessageDialog(loginFrame, "Error connecting to database. Please try again.");
+					}
+
 				}
-			
 			}
 		);
+		
+		submit.addActionListener(
+				new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						submitEntry();
+					}
+				
+				}
+			);
+		
+		// Listens for change in text field to auto-submit upon swipe
+		/*cardIDField.getDocument().addDocumentListener(new DocumentListener() {
+
+			@Override
+			public void insertUpdate(DocumentEvent e) {
+				
+				// TODO Auto-generated method stub
+				if(new String(cardIDField.getPassword()).length() == 59)
+					submitEntry();
+			}
+			@Override
+			public void removeUpdate(DocumentEvent e) {}
+
+			@Override
+			public void changedUpdate(DocumentEvent e){}
+		});*/
+		
+		cardIDField.addKeyListener(new KeyAdapter()
+	    {
+	        public void keyPressed(KeyEvent ke)
+	        {
+	        	if(new String(cardIDField.getPassword()).length() == 59)
+					submitEntry();
+	        }
+	    });
+	}
+	
+	/*
+	 * Gets points based on selected box
+	 */
+	public int getPoints()
+	{
+		if(general.isSelected())
+			return general.getPointValue();
+		else if (extended.isSelected())
+			return extended.getPointValue();
+		else if (specialEvent.isSelected())
+			return specialEvent.getPointValue();
+		
+		return 0;
+	}
+	
+	/*
+	 * Submits entry
+	 */
+	public void submitEntry()
+	{
+		String cardID = Reader.getCardID(new String(cardIDField.getPassword()));
+		if(!cardID.isEmpty())
+		{
+			try {
+				
+				User user = DatabaseUtility.getUser(cardID);
+				
+				if(user == null)
+				{
+					String accessID = JOptionPane.showInputDialog(checkInFrame, "Enter PSU Access ID (xyz1234):");
+					DatabaseUtility.insertNewUser(cardID, accessID, getPoints());
+				}
+				else
+				{
+					DatabaseUtility.updateUser(user, getPoints());
+				}
+				
+				User temp = DatabaseUtility.getUser(cardID);
+				String message = "Successfully entered! You now have " + temp.getPoints() + " points!";
+				JOptionPane.showMessageDialog(checkInFrame, message);
+				cardIDField.setText("");
+				cardIDField.requestFocus();
+				
+			} catch (SQLException e1) {}
+		}
+		else
+		{
+			JOptionPane.showMessageDialog(checkInFrame, "Incorrect Card ID. Please try again.");
+			cardIDField.requestFocus();
+		}
 	}
 	
 	/*
 	 * Main method to initiate GUI
 	 */
-	public static void main(String[] args) throws SQLException, IOException {
+	public static void main(String[] args) throws SQLException {
 		
 		CheckInGUI checkin = new CheckInGUI();
 
