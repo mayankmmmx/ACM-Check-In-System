@@ -3,6 +3,7 @@
  */
 import java.awt.*;
 import java.awt.event.*;
+import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import javax.swing.*;
@@ -266,7 +267,14 @@ public class CheckInGUI extends JFrame{
 	 */
 	public void submitEntry()
 	{
-		String cardID = Reader.getCardID(new String(cardIDField.getPassword()));
+		String cardInput = Reader.getCardID(new String(cardIDField.getPassword()));
+		String cardID = "";
+		try {
+			cardID = DatabaseUtility.encryptCardID(cardInput);
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		if(!cardID.isEmpty())
 		{
 			try {
@@ -276,6 +284,7 @@ public class CheckInGUI extends JFrame{
 				if(user == null)
 				{
 					String accessID = JOptionPane.showInputDialog(checkInFrame, "Enter PSU Access ID (xyz1234):");
+					System.out.println(cardID + "    "  + accessID);
 					DatabaseUtility.insertNewUser(cardID, accessID, getPoints());
 				}
 				else

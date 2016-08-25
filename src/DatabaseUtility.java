@@ -3,8 +3,13 @@
  */
 import java.sql.*;
 import java.util.Calendar;
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 public class DatabaseUtility {
+	
+	private final static String salt="DGE$5SGr@3VsHYUMas2323E4d57vfBfFSTRU@!DSH(*%FDSdfg13sgfsg";
 		
 	/*
 	 * Gets user using cardID as parameter
@@ -25,6 +30,20 @@ public class DatabaseUtility {
         }
         
         return null;
+	}
+	
+	/*
+	 * Encrypts data using MD5 hash
+	 * Returns encrypted String
+	 */
+	public static String encryptCardID(String cardID) throws NoSuchAlgorithmException
+	{
+		String salted = cardID + salt;
+        MessageDigest digest = MessageDigest.getInstance("MD5");
+        digest.update(salted.getBytes(), 0, salted.length());
+        String md5 = new BigInteger(1, digest.digest()).toString(16);
+
+        return md5;
 	}
 	
 	/*
