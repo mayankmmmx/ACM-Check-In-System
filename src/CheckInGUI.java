@@ -6,6 +6,9 @@ import java.awt.event.*;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.util.Date;
+
 import javax.swing.*;
 
 public class CheckInGUI extends JFrame{
@@ -280,21 +283,32 @@ public class CheckInGUI extends JFrame{
 			try {
 				
 				User user = DatabaseUtility.getUser(cardID);
+				boolean hasUserCheckedIn = false;
 				
 				if(user == null)
 				{
 					String accessID = JOptionPane.showInputDialog(checkInFrame, "Enter PSU Access ID (xyz1234):");
 					System.out.println(cardID + "    "  + accessID);
 					DatabaseUtility.insertNewUser(cardID, accessID, getPoints());
+					hasUserCheckedIn = true;
 				}
 				else
 				{
-					DatabaseUtility.updateUser(user, getPoints());
+					if(didNotCheckInWithinHour(user.getTimeStamp())) {
+						DatabaseUtility.updateUser(user, getPoints());
+						hasUserCheckedIn = true;
+					}
 				}
 				
 				User temp = DatabaseUtility.getUser(cardID);
-				String message = "Successfully entered! You now have " + temp.getPoints() + " points!";
-				JOptionPane.showMessageDialog(checkInFrame, message);
+				if(hasUserCheckedIn) {
+					String message = "Successfully entered! You now have " + temp.getPoints() + " points!";
+					JOptionPane.showMessageDialog(checkInFrame, message);
+				}
+				else {
+					String errorMessage = "Sorry, you've already checked-in in the past hour!";
+					JOptionPane.showMessageDialog(checkInFrame, errorMessage);
+				}
 				cardIDField.setText("");
 				cardIDField.requestFocus();
 				
@@ -305,6 +319,23 @@ public class CheckInGUI extends JFrame{
 			JOptionPane.showMessageDialog(checkInFrame, "Incorrect Card ID. Please try again.");
 			cardIDField.requestFocus();
 		}
+	}
+	
+	/*
+	 * Checks to see if user doesn't swipe in multiple times
+	 */
+	public boolean didNotCheckInWithinHour(Timestamp lastCheckedIn) {
+		Date currentTime = new Date();
+		long currentTimeMS = currentTime.getTime();
+		long lastCheckedInMS = lastCheckedIn.getTime();
+		long diff = currentTimeMS - lastCheckedInMS;
+		long diffHours = diff / (60 * 60 * 1000);
+		
+		if(diffHours >= 1) {
+			return true;
+		}
+	
+		return false;
 	}
 	
 	/*
