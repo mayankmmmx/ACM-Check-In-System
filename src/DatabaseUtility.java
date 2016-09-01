@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 
 public class DatabaseUtility {
 	
-	private final static String salt="DGE$5SGr@3VsHYUMas2323E4d57vfBfFSTRU@!DSH(*%FDSdfg13sgfsg";
+	private final static String salt="DGE$5SGr@3VsHYUMas23243fwd57vrfraSTRU!D!SH*)%FDSffg13sgfsg";
 		
 	/*
 	 * Gets user using cardID as parameter
